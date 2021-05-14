@@ -1,8 +1,8 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :account, class: DoubleDouble::Account do |account|
-    account.name { FactoryGirl.generate(:account_name) }
-    account.number { FactoryGirl.generate(:account_number) }
-    account.contra false
+    account.name { FactoryBot.generate(:account_name) }
+    account.number { FactoryBot.generate(:account_number) }
+    account.contra { false }
 
     factory :asset, class: DoubleDouble::Asset
     factory :equity, class: DoubleDouble::Equity

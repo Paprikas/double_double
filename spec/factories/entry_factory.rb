@@ -1,6 +1,6 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :entry, class: DoubleDouble::Entry do
-    description { FactoryGirl.generate(:entry_type_description) }
+    description { FactoryBot.generate(:entry_type_description) }
   end
 
   sequence :entry_description do |n|

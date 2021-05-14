@@ -30,8 +30,8 @@ module DoubleDouble
       end
 
       it "should report a trial balance of 0 after an entry is recorded" do
-        FactoryGirl.create(:liability, name: "liability acct")
-        FactoryGirl.create(:asset, name: "asset acct")
+        FactoryBot.create(:liability, name: "liability acct")
+        FactoryBot.create(:asset, name: "asset acct")
         expect {
           Entry.create!(
             description: "Entry for trial balance test",
@@ -46,7 +46,7 @@ module DoubleDouble
       let(:account_name) { "big bucks" }
 
       it "should return the specified account with the same name" do
-        named_account = FactoryGirl.create(:asset, name: account_name)
+        named_account = FactoryBot.create(:asset, name: account_name)
         expect(Account.named(account_name)).to eq(named_account)
       end
     end
@@ -55,7 +55,7 @@ module DoubleDouble
       let(:account_number) { 800 }
 
       it "should return the specified account with the same number" do
-        numbered_account = FactoryGirl.create(:liability, name: "numbered", number: account_number)
+        numbered_account = FactoryBot.create(:liability, name: "numbered", number: account_number)
         expect(Account.numbered(account_number)).to eq(numbered_account)
       end
     end
@@ -63,7 +63,7 @@ module DoubleDouble
     describe ".named_or_numbered" do
       let!(:account_number) { 888 }
       let!(:account_name) { "Cash on hand" }
-      let!(:account) { FactoryGirl.create(:asset, name: account_name, number: account_number) }
+      let!(:account) { FactoryBot.create(:asset, name: account_name, number: account_number) }
 
       it "should return an account if given a number" do
         expect(Account.named_or_numbered(account_number)).to eq(account)

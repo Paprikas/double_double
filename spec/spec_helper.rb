@@ -1,6 +1,6 @@
 require "database_cleaner"
 require "double_double"
-require "factory_girl"
+require "factory_bot"
 
 # Create an in-memory database and run our template migration
 ActiveRecord::Base.establish_connection(adapter: "sqlite3", database: ":memory:")

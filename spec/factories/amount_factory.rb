@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :amount, class: DoubleDouble::Amount do |amount|
   end
 
