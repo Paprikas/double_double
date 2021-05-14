@@ -76,15 +76,15 @@ module DoubleDouble
     # Validation
 
     def has_credit_amounts?
-      errors[:base] << "Entry must have at least one credit amount" if credit_amounts.blank?
+      errors.add(:base, "Entry must have at least one credit amount") if credit_amounts.blank?
     end
 
     def has_debit_amounts?
-      errors[:base] << "Entry must have at least one debit amount" if debit_amounts.blank?
+      errors.add(:base, "Entry must have at least one debit amount") if debit_amounts.blank?
     end
 
     def amounts_cancel?
-      errors[:base] << "The credit and debit amounts are not equal" if difference_of_amounts.cents != 0
+      errors.add(:base, "The credit and debit amounts are not equal") if difference_of_amounts.cents != 0
     end
 
     def difference_of_amounts
