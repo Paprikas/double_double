@@ -1,4 +1,4 @@
-class CreateDoubleDouble < ActiveRecord::Migration
+class CreateDoubleDouble < ActiveRecord::Migration[4.2]
   def change
     create_table :double_double_accounts do |t|
       t.integer :number,        null: false
