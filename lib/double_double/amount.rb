@@ -23,7 +23,7 @@ module DoubleDouble
 
     composed_of :amount,
       class_name: "Money",
-      mapping: [%w(amount_cents cents), %w(currency currency_as_string)],
+      mapping: [%w(amount_cents cents), %w(currency currency)],
       constructor: Proc.new { |cents, currency| Money.new(cents || 0, currency || Money.default_currency) }
 
     # [dane] Workaround to deal with the fact that composed of will never use the converter for a nil value. Otherwise,
@@ -34,7 +34,7 @@ module DoubleDouble
         part = Monetize.parse(part)
         raise(ArgumentError, "Can't convert #{value.class} to Money") unless part
       end
-      mapping = [%w(amount_cents cents), %w(currency currency_as_string)]
+      mapping = [%w(amount_cents cents), %w(currency currency)]
       mapping.each { |pair| self[pair.first] = part.send(pair.last) }
       @aggregation_cache[:amount] = part.freeze
     end
