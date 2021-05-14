@@ -132,11 +132,11 @@ module DoubleDouble
                          {account: "Loan_12", amount: 1}]}
         args_reversed = args_normal.merge({reversed: true})
         Entry.create!(args_normal)
-        expect(Account.named("Cash_11").balance).to eq(10)
-        expect(Account.named("Loan_12").balance).to eq(10)
+        expect(Account.named("Cash_11").balance).to eq(10.to_money)
+        expect(Account.named("Loan_12").balance).to eq(10.to_money)
         Entry.create!(args_reversed)
-        expect(Account.named("Cash_11").balance).to eq(0)
-        expect(Account.named("Loan_12").balance).to eq(0)
+        expect(Account.named("Cash_11").balance).to eq(0.to_money)
+        expect(Account.named("Loan_12").balance).to eq(0.to_money)
       end
     end
 
@@ -176,21 +176,21 @@ module DoubleDouble
           debits: [{account: "junk", amount: 60, context: @campaign1, accountee: @user1}],
           credits: [{account: "hotdogs", amount: 60, context: @campaign1, accountee: @user1}]
         )
-        expect(DoubleDouble::Account.named("hotdogs").credits_balance({context: @campaign1, accountee: @user1, entry_type: EntryType.of(:ketchup)})).to eq(60)
-        expect(DoubleDouble::Account.named("hotdogs").credits_balance({context: @campaign1, accountee: @user1, entry_type: EntryType.of(:onions)})).to eq(0)
+        expect(DoubleDouble::Account.named("hotdogs").credits_balance({context: @campaign1, accountee: @user1, entry_type: EntryType.of(:ketchup)})).to eq(60.to_money)
+        expect(DoubleDouble::Account.named("hotdogs").credits_balance({context: @campaign1, accountee: @user1, entry_type: EntryType.of(:onions)})).to eq(0.to_money)
         Entry.create!(
           description: "processed onions",
           entry_type: EntryType.of(:onions),
           debits: [{account: "junk", amount: 5, context: @campaign1, accountee: @user1}],
           credits: [{account: "hotdogs", amount: 5, context: @campaign1, accountee: @user1}]
         )
-        expect(DoubleDouble::Account.named("hotdogs").credits_balance({context: @campaign1, accountee: @user1, entry_type: EntryType.of(:ketchup)})).to eq(60)
-        expect(DoubleDouble::Account.named("hotdogs").credits_balance({context: @campaign1, accountee: @user1, entry_type: EntryType.of(:onions)})).to eq(5)
+        expect(DoubleDouble::Account.named("hotdogs").credits_balance({context: @campaign1, accountee: @user1, entry_type: EntryType.of(:ketchup)})).to eq(60.to_money)
+        expect(DoubleDouble::Account.named("hotdogs").credits_balance({context: @campaign1, accountee: @user1, entry_type: EntryType.of(:onions)})).to eq(5.to_money)
       end
     end
 
     describe "amount accountee references" do
-      it "should allow a Entry to be built describing the accountee in the hash" do
+      fit "should allow a Entry to be built describing the accountee in the hash" do
         Entry.create!(
           description: "Sold some widgets",
           debits: [{account: "Cash_11", amount: 60, context: @campaign1, accountee: @user1},
@@ -203,12 +203,12 @@ module DoubleDouble
         expect(Amount.by_accountee(@user1).count).to eq(2)
         expect(Amount.by_accountee(@user2).count).to eq(1)
 
-        expect(@cash.debits_balance(context: @campaign1, accountee: @user1)).to eq(60)
-        expect(@cash.debits_balance(context: @campaign1, accountee: @user2)).to eq(0)
-        expect(@cash.debits_balance(context: @campaign2, accountee: @user1)).to eq(40)
-        expect(@cash.debits_balance(context: @campaign2, accountee: @user2)).to eq(4)
-        expect(@cash.debits_balance(context: @campaign2)).to eq(44)
-        expect(Account.trial_balance).to eq(0)
+        expect(@cash.debits_balance(context: @campaign1, accountee: @user1)).to eq(60.to_money)
+        expect(@cash.debits_balance(context: @campaign1, accountee: @user2)).to eq(0.to_money)
+        expect(@cash.debits_balance(context: @campaign2, accountee: @user1)).to eq(40.to_money)
+        expect(@cash.debits_balance(context: @campaign2, accountee: @user2)).to eq(4.to_money)
+        expect(@cash.debits_balance(context: @campaign2)).to eq(44.to_money)
+        expect(Account.trial_balance).to eq(0.to_money)
       end
     end
 
@@ -225,9 +225,9 @@ module DoubleDouble
         expect(Amount.by_context(@campaign1).count).to eq(2)
         expect(Amount.by_context(@campaign2).count).to eq(1)
 
-        expect(@cash.debits_balance(context: @campaign1)).to eq(60)
-        expect(@cash.debits_balance(context: @campaign2)).to eq(40)
-        expect(Account.trial_balance).to eq(0)
+        expect(@cash.debits_balance(context: @campaign1)).to eq(60.to_money)
+        expect(@cash.debits_balance(context: @campaign2)).to eq(40.to_money)
+        expect(Account.trial_balance).to eq(0.to_money)
       end
     end
   end

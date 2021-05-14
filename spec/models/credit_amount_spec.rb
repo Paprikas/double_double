@@ -65,9 +65,9 @@ module DoubleDouble
         debits: [{account: "Cash", amount: amount_no_context}],
         credits: [{account: "Loan", amount: amount_no_context}]
       )
-      expect(@loan.credits_balance({context: @job})).to eq(amount_job)
-      expect(@loan.credits_balance({context: @po})).to eq(amount_po)
-      expect(@loan.credits_balance).to eq(amount_job + amount_po + amount_no_context)
+      expect(@loan.credits_balance({context: @job})).to eq(amount_job.to_money)
+      expect(@loan.credits_balance({context: @po})).to eq(amount_po.to_money)
+      expect(@loan.credits_balance).to eq((amount_job + amount_po + amount_no_context).to_money)
     end
 
     it "should be sensitive to 'subcontext' when calculating balances, if supplied" do
@@ -88,9 +88,9 @@ module DoubleDouble
         debits: [{account: "Cash", amount: amount_bar}],
         credits: [{account: "Loan", amount: amount_bar, context: @po, subcontext: @item_bar}]
       )
-      expect(@loan.credits_balance({context: @po, subcontext: @item_foo})).to eq(amount_foo)
-      expect(@loan.credits_balance({context: @po, subcontext: @item_bar})).to eq(amount_bar)
-      expect(@loan.credits_balance({subcontext: @item_foo})).to eq(amount_foo * 2)
+      expect(@loan.credits_balance({context: @po, subcontext: @item_foo})).to eq(amount_foo.to_money)
+      expect(@loan.credits_balance({context: @po, subcontext: @item_bar})).to eq(amount_bar.to_money)
+      expect(@loan.credits_balance({subcontext: @item_foo})).to eq((amount_foo * 2).to_money)
       expect(Account.trial_balance).to eq(0)
     end
   end
