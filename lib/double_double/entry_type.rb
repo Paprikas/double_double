@@ -1,10 +1,10 @@
 module DoubleDouble
   class EntryType < ActiveRecord::Base
-    self.table_name = 'double_double_entry_types'
-    
+    self.table_name = "double_double_entry_types"
+
     has_many :entries
 
-    validates :description, length: { minimum: 6 }, presence: true, uniqueness: true
+    validates :description, length: {minimum: 6}, presence: true, uniqueness: true
 
     def self.of description_given
       EntryType.where(description: description_given.to_s).first
@@ -18,7 +18,7 @@ module DoubleDouble
   class UnassignedEntryType
     class << self
       def description
-        'unassigned'
+        "unassigned"
       end
     end
   end

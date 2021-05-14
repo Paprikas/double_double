@@ -29,16 +29,16 @@ module DoubleDouble
   # @see http://en.wikipedia.org/wiki/Debits_and_credits Debits, Credits, and Contra Accounts
   #
   class Account < ActiveRecord::Base
-    self.table_name = 'double_double_accounts'
+    self.table_name = "double_double_accounts"
 
     has_many :credit_amounts
     has_many :debit_amounts
     has_many :credit_entries, through: :credit_amounts, source: :entry
-    has_many :debit_entries,  through: :debit_amounts,  source: :entry
+    has_many :debit_entries, through: :debit_amounts, source: :entry
 
     validates_presence_of :type, :name, :number
     validates_uniqueness_of :name, :number
-    validates_length_of :name, :minimum => 1
+    validates_length_of :name, minimum: 1
 
     class << self
       # The trial balance of all accounts in the system. This should always equal zero,
@@ -49,18 +49,18 @@ module DoubleDouble
         raise(NoMethodError, "undefined method 'trial_balance'") unless self == DoubleDouble::Account
         Asset.balance - Liability.balance + Equity.balance + Revenue.balance - Expense.balance
       end
-      
+
       def balance
         raise(NoMethodError, "undefined method 'balance'") if self == DoubleDouble::Account
-        self.all.map { |acct| acct.contra ? -acct.balance : acct.balance }.reduce(:+) || Money.new(0)
+        all.map { |acct| acct.contra ? -acct.balance : acct.balance }.reduce(:+) || Money.new(0)
       end
 
       def named account_name
-        self.where(name: account_name.to_s).first
+        where(name: account_name.to_s).first
       end
 
       def numbered account_number
-        self.where(number: account_number.to_i).first
+        where(number: account_number.to_i).first
       end
 
       def named_or_numbered identifier
@@ -82,40 +82,34 @@ module DoubleDouble
 
     protected
 
-      def side_balance(is_debit, hash)
-        class_name = is_debit ? DoubleDouble::DebitAmount : DoubleDouble::CreditAmount
-        relation = class_name.where(account_id: self.id)
-        relation = relation.by_context(hash[:context])       if hash.has_key? :context
-        relation = relation.by_subcontext(hash[:subcontext]) if hash.has_key? :subcontext
-        relation = relation.by_accountee(hash[:accountee])   if hash.has_key? :accountee
-        relation = relation.by_entry_type(hash[:entry_type]) if hash.has_key? :entry_type
-        Money.new(relation.sum(:amount_cents))
+    def side_balance(is_debit, hash)
+      class_name = is_debit ? DoubleDouble::DebitAmount : DoubleDouble::CreditAmount
+      relation = class_name.where(account_id: id)
+      relation = relation.by_context(hash[:context]) if hash.has_key? :context
+      relation = relation.by_subcontext(hash[:subcontext]) if hash.has_key? :subcontext
+      relation = relation.by_accountee(hash[:accountee]) if hash.has_key? :accountee
+      relation = relation.by_entry_type(hash[:entry_type]) if hash.has_key? :entry_type
+      Money.new(relation.sum(:amount_cents))
+    end
+
+    # The balance method that derived Accounts utilize.
+    #
+    # Nornal Debit Accounts:
+    # if contra { credits_balance(hash) - debits_balance(hash)  }
+    # else      { debits_balance(hash)  - credits_balance(hash) }
+    #
+    # Normal Credit Accounts:
+    # if contra { debits_balance(hash)  - credits_balance(hash) }
+    # else      { credits_balance(hash) - debits_balance(hash)  }
+    #
+    # @return [Money] The balance of the account instance
+    def child_account_balance(is_normal_debit_account, hash = {})
+      raise(NoMethodError, "undefined method 'balance'") if self === DoubleDouble::Account
+      if (is_normal_debit_account && contra) || !(is_normal_debit_account || contra)
+        credits_balance(hash) - debits_balance(hash)
+      else
+        debits_balance(hash) - credits_balance(hash)
       end
-      # The balance method that derived Accounts utilize.
-      #
-      # Nornal Debit Accounts:
-      # if contra { credits_balance(hash) - debits_balance(hash)  }
-      # else      { debits_balance(hash)  - credits_balance(hash) }
-      #
-      # Normal Credit Accounts:
-      # if contra { debits_balance(hash)  - credits_balance(hash) }
-      # else      { credits_balance(hash) - debits_balance(hash)  }
-      #
-      # @return [Money] The balance of the account instance
-      def child_account_balance(is_normal_debit_account, hash = {})
-        raise(NoMethodError, "undefined method 'balance'") if self === DoubleDouble::Account
-        if (is_normal_debit_account && contra) || !(is_normal_debit_account || contra)
-          credits_balance(hash) - debits_balance(hash)
-        else
-          debits_balance(hash) - credits_balance(hash)
-        end
-      end
+    end
   end
 end
-
-
-
-
-
-
-
